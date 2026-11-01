@@ -37,9 +37,16 @@ juce_add_plugin(VocalForge
     VST3_CATEGORIES Fx Dynamics EQ Reverb
     AU_MAIN_TYPE kAudioUnitType_Effect)
 
+# Quellcode im Ordner "Source" ODER lose im Hauptordner (z. B. nach GitHub-Upload)
+if(EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/Source/PluginProcessor.cpp")
+    set(VF_SRC "${CMAKE_CURRENT_SOURCE_DIR}/Source")
+else()
+    set(VF_SRC "${CMAKE_CURRENT_SOURCE_DIR}")
+endif()
+
 target_sources(VocalForge PRIVATE
-    Source/PluginProcessor.cpp
-    Source/PluginEditor.cpp)
+    ${VF_SRC}/PluginProcessor.cpp
+    ${VF_SRC}/PluginEditor.cpp)
 
 target_compile_definitions(VocalForge PUBLIC
     JUCE_WEB_BROWSER=0
@@ -55,7 +62,7 @@ target_link_libraries(VocalForge
 option(VF_TESTS "Build offline DSP test" OFF)
 if(VF_TESTS)
     juce_add_console_app(VocalForgeTest PRODUCT_NAME "VocalForgeTest")
-    target_sources(VocalForgeTest PRIVATE Tests/Test.cpp Source/PluginProcessor.cpp Source/PluginEditor.cpp)
+    target_sources(VocalForgeTest PRIVATE Tests/Test.cpp ${VF_SRC}/PluginProcessor.cpp ${VF_SRC}/PluginEditor.cpp)
     target_compile_definitions(VocalForgeTest PRIVATE JucePlugin_Name="VocalForge" JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0)
     target_link_libraries(VocalForgeTest PRIVATE juce::juce_audio_utils juce::juce_dsp juce::juce_recommended_config_flags)
 endif()
